@@ -1,0 +1,34 @@
+name: 每日股市分析推播
+
+on:
+schedule:
+# 台灣時間 16:00 = UTC 08:00
+# 週一到週五執行
+- cron: ‘0 8 * * 1-5’
+
+# 允許手動觸發（測試用）
+
+workflow_dispatch:
+
+jobs:
+analyze-and-notify:
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Checkout 程式碼
+    uses: actions/checkout@v4
+
+  - name: 設定 Python
+    uses: actions/setup-python@v5
+    with:
+      python-version: '3.11'
+
+  - name: 安裝套件
+    run: pip install anthropic requests
+
+  - name: 執行股市分析並推播
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
+    run: python analyze.py
