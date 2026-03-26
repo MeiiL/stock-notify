@@ -157,16 +157,35 @@ def draw_tarot():
 def analyze_with_claude(us_data, tw_data, indices, tarot_name, tarot_meaning):
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     today_str = datetime.now().strftime("%Y/%m/%d")
-
-    '''
     prompt = (
-        ...
+        'You are a senior Taiwan stock analyst. Today is ' + today_str + '.\n\n'
+        'Based on the data below, write a concise after-market report in Traditional Chinese.\n\n'
+        'Use this exact format:\n\n'
+        '[大盤現況]\n'
+        '(1-3 lines on today market mood)\n\n'
+        '[持股重點分析]\n'
+        '(one line per stock: symbol price change% arrow suggestion)\n'
+        '(suggestions: 強烈買入 / 買入 / 持有 / 減碼 / 賣出)\n\n'
+        '[今日重要財經訊號]\n'
+        '(2-3 key signals or risks)\n\n'
+        '[今日塔羅]\n'
+        '(1-2 lines blending tarot with today market mood)\n\n'
+        '---\n'
+        'Indices:\n' + json.dumps(indices, ensure_ascii=False) + '\n\n'
+        'US stocks:\n' + json.dumps(us_data, ensure_ascii=False) + '\n\n'
+        'TW stocks:\n' + json.dumps(tw_data, ensure_ascii=False) + '\n\n'
+        'Tarot card: ' + tarot_name + '\n'
+        'Meaning: ' + tarot_meaning + '\n\n'
+        'Rules: concise, friendly tone, max 40 chars per line, no disclaimers.'
     )
+
     message = client.messages.create(
-        ...
+        model='claude-opus-4-5',
+        max_tokens=1500,
+        messages=[{'role': 'user', 'content': prompt}]
     )
+
     return message.content[0].text
-    '''
 
 # –––––––––––––––––––––––––
 # HTML email builder
