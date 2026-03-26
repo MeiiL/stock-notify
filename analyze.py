@@ -450,7 +450,7 @@ html = build_html_email(analysis, indices, us_data, tw_data, tarot_name, tarot_m
 send_gmail(html, subject)
 
 print("📲 推播到 LINE...")
-send_line_message(full_message)
+#send_line_message(full_message)
 
 print("✅ 完成！")
 ```
