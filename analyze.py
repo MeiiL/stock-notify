@@ -10,6 +10,9 @@ import requests
 import anthropic
 from datetime import datetime, date
 import random
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 # ─────────────────────────────────────
 
@@ -258,6 +261,161 @@ for chunk in chunks:
 
 # ─────────────────────────────────────
 
+# 產生 HTML Email 內容
+
+# ─────────────────────────────────────
+
+def build_html_email(analysis: str, indices: dict, us_data: dict, tw_data: dict, tarot_name: str, tarot_meaning: str) -> str:
+today_str = datetime.now().strftime(”%Y/%m/%d”)
+
+```
+def pct_color(pct):
+    if pct is None: return "#888888"
+    return "#e74c3c" if pct >= 0 else "#27ae60"
+
+def pct_str(pct):
+    if pct is None: return "N/A"
+    sign = "▲" if pct >= 0 else "▼"
+    return f"{sign} {abs(pct):.2f}%"
+
+# 大盤表格
+index_rows = ""
+for name, d in indices.items():
+    color = pct_color(d.get("change_pct"))
+    index_rows += f"""
+    <tr>
+        <td>{name}</td>
+        <td>{d.get('price', 'N/A')}</td>
+        <td style="color:{color};font-weight:bold">{pct_str(d.get('change_pct'))}</td>
+    </tr>"""
+
+# 美股表格
+us_rows = ""
+for sym, d in us_data.items():
+    color = pct_color(d.get("change_pct"))
+    us_rows += f"""
+    <tr>
+        <td><b>{sym}</b></td>
+        <td>${d.get('price', 'N/A')}</td>
+        <td style="color:{color};font-weight:bold">{pct_str(d.get('change_pct'))}</td>
+    </tr>"""
+
+# 台股表格
+tw_rows = ""
+for code, d in tw_data.items():
+    color = pct_color(d.get("change_pct"))
+    tw_rows += f"""
+    <tr>
+        <td><b>{d.get('name', code)} ({code})</b></td>
+        <td>NT${d.get('price', 'N/A')}</td>
+        <td style="color:{color};font-weight:bold">{pct_str(d.get('change_pct'))}</td>
+    </tr>"""
+
+# Claude 分析轉 HTML（把換行變 <br>）
+analysis_html = analysis.replace("\n", "<br>")
+
+html = f"""
+```
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body {{ font-family: -apple-system, Arial, sans-serif; background:#f5f6fa; margin:0; padding:20px; }}
+  .container {{ max-width:640px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); }}
+  .header {{ background:linear-gradient(135deg,#1a1a2e,#16213e); color:#fff; padding:24px 28px; }}
+  .header h1 {{ margin:0; font-size:22px; letter-spacing:1px; }}
+  .header p {{ margin:4px 0 0; opacity:0.6; font-size:13px; }}
+  .section {{ padding:20px 28px; border-bottom:1px solid #f0f0f0; }}
+  .section h2 {{ font-size:14px; color:#888; text-transform:uppercase; letter-spacing:1px; margin:0 0 12px; }}
+  table {{ width:100%; border-collapse:collapse; font-size:14px; }}
+  th {{ background:#f8f9fa; padding:8px 10px; text-align:left; color:#666; font-weight:600; font-size:12px; }}
+  td {{ padding:8px 10px; border-bottom:1px solid #f5f5f5; }}
+  tr:last-child td {{ border-bottom:none; }}
+  .analysis {{ line-height:1.8; font-size:14px; color:#333; }}
+  .tarot {{ background:#f8f0ff; border-left:4px solid #9b59b6; padding:14px 18px; border-radius:0 8px 8px 0; }}
+  .tarot-name {{ font-size:18px; font-weight:bold; color:#9b59b6; }}
+  .footer {{ padding:16px 28px; text-align:center; font-size:12px; color:#aaa; background:#fafafa; }}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📊 每日盤後分析</h1>
+    <p>{today_str} · 台灣時間 16:00</p>
+  </div>
+
+  <div class="section">
+    <h2>🌍 大盤指數</h2>
+    <table>
+      <tr><th>指數</th><th>價格</th><th>漲跌</th></tr>
+      {index_rows}
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>🇺🇸 美股持股</h2>
+    <table>
+      <tr><th>股票</th><th>現價</th><th>漲跌</th></tr>
+      {us_rows}
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>🇹🇼 台股持股</h2>
+    <table>
+      <tr><th>股票</th><th>現價</th><th>漲跌</th></tr>
+      {tw_rows}
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>🤖 Claude 分析</h2>
+    <div class="analysis">{analysis_html}</div>
+  </div>
+
+  <div class="section">
+    <h2>🔮 今日塔羅</h2>
+    <div class="tarot">
+      <div class="tarot-name">{tarot_name}</div>
+      <div style="margin-top:6px;color:#555;font-size:14px">{tarot_meaning}</div>
+    </div>
+  </div>
+
+  <div class="footer">本報告由 Claude AI 自動生成 · 僅供參考</div>
+</div>
+</body>
+</html>"""
+    return html
+
+# ─────────────────────────────────────
+
+# 寄送 Gmail
+
+# ─────────────────────────────────────
+
+def send_gmail(html_content: str, subject: str):
+sender    = os.environ[“GMAIL_SENDER”]
+password  = os.environ[“GMAIL_APP_PASSWORD”]
+recipient = os.environ[“GMAIL_RECIPIENT”]
+
+```
+msg = MIMEMultipart("alternative")
+msg["Subject"] = subject
+msg["From"]    = sender
+msg["To"]      = recipient
+msg.attach(MIMEText(html_content, "html", "utf-8"))
+
+with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+    server.login(sender, password)
+    server.sendmail(sender, recipient, msg.as_string())
+print(f"✅ Gmail 已寄出到 {recipient}")
+```
+
+# ─────────────────────────────────────
+
 # 主程式
 
 # ─────────────────────────────────────
@@ -286,8 +444,13 @@ today_str = datetime.now().strftime("%m/%d")
 header = f"📊 {today_str} 盤後分析\n{'─'*20}\n"
 full_message = header + analysis
 
+print("📧 寄送 Gmail...")
+subject = f"📊 {today_str} 每日盤後分析"
+html = build_html_email(analysis, indices, us_data, tw_data, tarot_name, tarot_meaning)
+send_gmail(html, subject)
+
 print("📲 推播到 LINE...")
-send_line_message(full_message)
+#send_line_message(full_message)
 
 print("✅ 完成！")
 ```
