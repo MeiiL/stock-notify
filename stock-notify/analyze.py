@@ -1,8 +1,8 @@
-##“””
-##每日股市分析 + LINE 推播
-##持股：美股 + 台股
-##時間：台灣時間 16:00（盤後）
-##“””
+“””
+每日股市分析 + LINE 推播
+持股：美股 + 台股
+時間：台灣時間 16:00（盤後）
+“””
 
 import os
 import json
@@ -450,7 +450,7 @@ html = build_html_email(analysis, indices, us_data, tw_data, tarot_name, tarot_m
 send_gmail(html, subject)
 
 print("📲 推播到 LINE...")
-#send_line_message(full_message)
+send_line_message(full_message)
 
 print("✅ 完成！")
 ```
