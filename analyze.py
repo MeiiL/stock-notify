@@ -229,24 +229,31 @@ prompt = f"""
 
 # ─────────────────────────────────────
 
-# LINE Notify 推播
+# LINE Messaging API 推播
 
 # ─────────────────────────────────────
 
-def send_line_notify(message: str):
-token = os.environ[“LINE_NOTIFY_TOKEN”]
-url = “https://notify-api.line.me/api/notify”
-headers = {“Authorization”: f”Bearer {token}”}
+def send_line_message(message: str):
+token = os.environ[“LINE_CHANNEL_ACCESS_TOKEN”]
+user_id = os.environ[“LINE_USER_ID”]
+url = “https://api.line.me/v2/bot/message/push”
+headers = {
+“Authorization”: f”Bearer {token}”,
+“Content-Type”: “application/json”
+}
 
 ```
-# LINE Notify 單則上限 1000 字，超過就分段
-max_len = 950
+# LINE 單則訊息上限 5000 字，超過就分段
+max_len = 4900
 chunks = [message[i:i+max_len] for i in range(0, len(message), max_len)]
 
 for chunk in chunks:
-    data = {"message": f"\n{chunk}"}
-    r = requests.post(url, headers=headers, data=data)
-    print(f"LINE Notify 回應：{r.status_code}")
+    payload = {
+        "to": user_id,
+        "messages": [{"type": "text", "text": chunk}]
+    }
+    r = requests.post(url, headers=headers, json=payload)
+    print(f"LINE Messaging API 回應：{r.status_code} {r.text}")
 ```
 
 # ─────────────────────────────────────
@@ -280,7 +287,7 @@ header = f"📊 {today_str} 盤後分析\n{'─'*20}\n"
 full_message = header + analysis
 
 print("📲 推播到 LINE...")
-send_line_notify(full_message)
+send_line_message(full_message)
 
 print("✅ 完成！")
 ```
