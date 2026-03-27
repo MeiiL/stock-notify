@@ -263,8 +263,8 @@ def main():
 
     print("Sending Gmail...")
     subject = "Daily Market Report " + today_str
-    #html = build_html_email(analysis, indices, us_data, tw_data, tarot_name, tarot_meaning)
-    #send_gmail(html, subject)
+    html = build_html_email(analysis, indices, us_data, tw_data, tarot_name, tarot_meaning)
+    send_gmail(html, subject)
 
     print("Sending LINE...")
     send_line_message(full_message)
