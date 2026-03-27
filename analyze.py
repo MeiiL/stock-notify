@@ -282,8 +282,8 @@ def send_gmail(html_content, subject):
 # –––––––––––––––––––––––––
 
 def send_line_message(message):
-    token = os.getenv["LINE_CHANNEL_ACCESS_TOKEN"]
-    user_id = os.getenv["LINE_USER_ID"]
+    token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
+    user_id = os.environ["LINE_USER_ID"]
     url = "https://api.line.me/v2/bot/message/push"
     headers = {
         "Authorization": "Bearer " + token,
