@@ -291,8 +291,8 @@ def send_gmail(html_content, subject):
 
 def send_line_message(message):
     token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
-    user_id = os.environ["LINE_USER_ID"]
-    url = "https://api.line.me/v2/bot/message/push"
+    #user_id = os.environ["LINE_USER_ID"]
+    url = "https://api.line.me/v2/bot/message/broadcast"
     headers = {
         "Authorization": "Bearer " + token,
         "Content-Type": "application/json"
@@ -301,7 +301,6 @@ def send_line_message(message):
     chunks = [message[i:i + max_len] for i in range(0, len(message), max_len)]
     for chunk in chunks:
         payload = {
-            "to": user_id,
             "messages": [{"type": "text", "text": chunk}]
         }
         r = requests.post(url, headers=headers, json=payload)
