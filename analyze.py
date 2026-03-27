@@ -259,12 +259,12 @@ def build_html_email(analysis, indices, us_data, tw_data, tarot_name, tarot_mean
 # –––––––––––––––––––––––––
 
 def send_gmail(html_content, subject):
-    sender = os.getenv["GMAIL_SENDER"]
-    password = os.getenv["GMAIL_APP_PASSWORD"]
-    recipient = os.getenv["GMAIL_RECIPIENT"]
-    #sender = os.environ['GMAIL_SENDER']
-    #password = os.environ['GMAIL_APP_PASSWORD']
-    #recipient = os.environ['GMAIL_RECIPIENT']
+    #sender = os.getenv["GMAIL_SENDER"]
+    #password = os.getenv["GMAIL_APP_PASSWORD"]
+    #recipient = os.getenv["GMAIL_RECIPIENT"]
+    sender = os.environ['GMAIL_SENDER']
+    password = os.environ['GMAIL_APP_PASSWORD']
+    recipient = os.environ['GMAIL_RECIPIENT']
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
