@@ -25,10 +25,8 @@ US_STOCKS = [
 TW_STOCKS = [
 ("2330", "TSMC"),
 ("2404", "HanTang"),
-("2812", "TaichungBank"),
 ("2834", "TaiwanBiz"),
-("2845", "FarEastBank"),
-("3293", "IGS"),
+("2845", "FarEastBank")
 ]
 
 # –––––––––––––––––––––––––
