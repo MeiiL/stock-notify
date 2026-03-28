@@ -1,6 +1,6 @@
 # 每日股市分析 LINE & Gmail 推播
 
-每天台灣時間 **16:00**（盤後），自動分析持股並同時推播到 Gmail 和 LINE。
+每天台灣時間 **20:00**（盤前），自動分析持股並同時推播到 Gmail 和 LINE。
 
 ## 功能
 
@@ -123,7 +123,7 @@ Actions → 「每日股市分析推播」→「Run workflow」
 |GitHub Actions    |免費（每月 2000 分鐘）               |
 |LINE Messaging API|每月 200 則免費                   |
 |Gmail SMTP        |完全免費                         |
-|Claude API        |約 $0.03~0.10 美元/次，每月約 $1~2 美元|
+|Claude API        |約 $0.03 - 0.10 美元/次，每月約 $1~2 美元|
 
 -----
 
