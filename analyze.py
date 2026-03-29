@@ -163,7 +163,7 @@ def analyze_with_claude_lite(us_data, tw_data, indices, tarot_name, tarot_zh, or
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     today_str = datetime.now().strftime("%Y/%m/%d")
     prompt = (
-        "你是資深台股分析師。今天是 " + today_str + "。\n"
+        "你是擁有20年經驗的專業資深台股美股分析師，熟悉技術分析、基本面分析與總體經濟。今天是 " + today_str + "。\n"
         "用繁體中文寫一份簡短的盤後快報，給一般投資人看，不需要個股細節。\n\n"
         "格式如下：\n\n"
         "📊 大盤現況\n"
@@ -208,18 +208,14 @@ def analyze_with_claude_full(us_data, tw_data, indices, tarot_name, tarot_zh, or
     stock_tarot_text = "\n".join(stock_tarot_lines)
 
     prompt = (
-        "你是資深台股分析師兼塔羅解讀師。今天是 " + today_str + "。\n"
-        "用繁體中文寫完整盤後分析報告，結合當日股市實際數據、國際時事與塔羅牌解讀。\n\n"
+        "你是擁有20年經驗的專業資深台股美股分析師，熟悉技術分析、基本面分析與總體經濟，"
+        "同時精通塔羅牌解讀。今天是 " + today_str + "。\n"
+        "用繁體中文寫完整盤後分析報告，以專業但親切的語氣，"
+        "結合當日股市實際數據、國際時事與塔羅牌解讀，給出有深度的操作建議。\n\n"
         "=== 格式 ===\n\n"
-        "【大盤現況】\n"
-        "（2-3行，今日市場整體氣氛與走勢）\n\n"
-        "【重要財經新聞預警】\n"
-        "（列出近期2-3個會影響持股的重要事件或數據）\n\n"
-        "【今日市場主要驅動力】\n"
-        "（2-3個關鍵因素）\n\n"
         "【個股塔羅解牌＋操作建議】\n"
-        "針對以下每一支股票，根據當日漲跌、塔羅牌正逆位、國際時事，給出：\n"
-        "- 塔羅解讀（正位強調機遇，逆位強調警示）\n"
+        "針對以下每一支股票，根據當日漲跌、塔羅牌正逆位、國際時事與技術面，給出：\n"
+        "- 塔羅解讀（正位強調機遇，逆位強調警示，結合該股基本面與市場現況）\n"
         "- 明確操作建議：強烈買入 / 買入 / 持有 / 減碼 / 賣出\n"
         "格式：\n"
         "▸ [股票代號] [牌名] [正/逆位]\n"
@@ -229,16 +225,16 @@ def analyze_with_claude_full(us_data, tw_data, indices, tarot_name, tarot_zh, or
         "🔴 優先買入：（最多3支，附簡短理由）\n"
         "🟢 考慮減碼：（最多3支，附簡短理由）\n\n"
         "【風險提示】\n"
-        "（針對持股集中度與當前市況的風險警示）\n\n"
+        "（從專業分析師角度，針對持股集中度與當前總經環境提出具體風險警示）\n\n"
         "【今日大盤塔羅】\n"
         "牌：" + tarot_name + " " + tarot_zh + " " + orientation + "\n"
-        "（2行，結合今日大盤氣氛做整體解讀）\n\n"
+        "（2行，以分析師視角結合今日大盤氣氛做整體解讀）\n\n"
         "=== 數據 ===\n"
         "大盤指數：\n" + json.dumps(indices, ensure_ascii=False) + "\n\n"
         "美股持倉：\n" + json.dumps(us_data, ensure_ascii=False) + "\n\n"
         "台股持倉：\n" + json.dumps(tw_data, ensure_ascii=False) + "\n\n"
         "個股塔羅牌（已抽好，請依此解牌）：\n" + stock_tarot_text + "\n\n"
-        "規則：繁體中文、每行不超過40字、語氣親切專業、不加免責聲明。"
+        "規則：繁體中文、每行不超過40字、語氣專業親切、不加免責聲明。"
     )
 
     message = client.messages.create(
