@@ -1,0 +1,13 @@
+{
+  "us": [
+    "APLD", "ASML", "MRVL", "RXRX", "TSLA", "NVDA",
+    "GOOGL", "CRWV", "AMD", "NEE", "VST", "MU",
+    "VRT", "MP", "AVGO", "PANW", "AMZN"
+  ],
+  "tw": [
+    ["2330", "TSMC"],
+    ["2404", "HanTang"],
+    ["2834", "TaiwanBiz"],
+    ["2845", "FarEastBank"]
+  ]
+}
